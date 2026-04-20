@@ -47,4 +47,4 @@ This is where the magic happens. Even without the app, this sheet is a professio
 * **Privacy:** Your data stays between Google and your phone. No third parties.  
 * **Self-Reliance:** You own the code. You own the data.
 
-*Blueprint for Independence • Christopher M Kollar • Coos Bay, Oregon*
+*Blueprint for Independence • Chris Hitchabout • Coos Bay, Oregon*
