@@ -1,0 +1,79 @@
+import streamlit as st
+from gspread_streamlit import GSpreadLoader
+
+# Set Page Config
+st.set_page_config(page_title="Budget Remote", page_icon="🧮", layout="centered")
+
+# Custom CSS for Mobile Styling
+st.markdown("""
+    <style>
+    .stButton>button {
+        width: 100%;
+        border-radius: 10px;
+        height: 3em;
+        background-color: #f0f2f6;
+    }
+    .main-metric {
+        background-color: #0e1117;
+        padding: 20px;
+        border-radius: 15px;
+        color: white;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# 1. Load Data
+# You will need to add your GS_SECRET to Streamlit Secrets
+try:
+    loader = GSpreadLoader()
+    # Replace the URL below with your own Published Google Sheet URL
+    spreadsheet_url = st.secrets["spreadsheet_url"]
+    sh = loader.load_sheet(spreadsheet_url)
+    worksheet = sh.get_worksheet(0)
+    data = worksheet.get_all_values()
+except Exception as e:
+    st.error("Connection Error. Please check your Secrets and Spreadsheet URL.")
+    st.stop()
+
+# 2. Header Metrics
+bank_balance = data[2][3] # D3
+active_funds = data[2][6] # G3
+total_due = data[3][0]    # A4
+
+st.markdown(f"""
+    <div class="main-metric">
+        <p style="margin:0; font-size: 0.8em; color: #888;">ACTIVE FUNDS</p>
+        <h1 style="margin:0; font-size: 2.5em;">${active_funds}</h1>
+        <hr style="border: 0.5px solid #333; margin: 15px 0;">
+        <div style="display: flex; justify-content: space-around;">
+            <div>
+                <p style="margin:0; font-size: 0.7em; color: #888;">BANK</p>
+                <p style="margin:0; font-weight: bold;">${bank_balance}</p>
+            </div>
+            <div>
+                <p style="margin:0; font-size: 0.7em; color: #888;">DUE</p>
+                <p style="margin:0; font-weight: bold; color: #ff4b4b;">${total_due}</p>
+            </div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
+# 3. Bill Sections
+# These functions are called by the snippets generated in the Wizard
+def show_bill_list(title, icon, cell_range):
+    st.subheader(f"{icon} {title}")
+    # Logic to parse the range and show checkboxes
+    # (Simplified for the template)
+    st.info(f"Viewing bills in range {cell_range}")
+
+# --- PASTE WIZARD SNIPPETS BELOW ---
+# Example default snippets:
+show_bill_list("IMPORTANT", "🏦", "A8:C27")
+show_bill_list("STREAMING", "📺", "A33:C42")
+show_bill_list("SHOPPING", "🛒", "A48:C57")
+# --- END WIZARD SNIPPETS ---
+
+if st.button("🔄 Sync with Sheet"):
+    st.rerun()
